@@ -1,0 +1,5 @@
+all:
+	g++ -g *.cpp -o test.exe
+
+clean:
+	rm *.o *.exe
