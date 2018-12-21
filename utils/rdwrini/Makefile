@@ -12,7 +12,6 @@ CPP_DEPS += \
 $(UTILDIR)/utils/rdwrini/RdWrIni.d
 
 
-
 # Each subdirectory must supply rules for building sources it contributes
 $(UTILDIR)/utils/rdwrini/%.o : $(UTILDIR)/utils/rdwrini/%.cpp
 	@echo 'Building file: $<'
