@@ -7,7 +7,7 @@
 
 #include "_tools.h"
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <io.h>
 #include <direct.h>
 #else
@@ -56,7 +56,7 @@ ALLOCMEM:
 
 	try 
 	{
-#if defined _MSC_VER || defined _WIN32 || defined _WIN64
+#ifdef _WIN32
 		int iRet = vsprintf_s(pMsg, stLen - 1, pszFmt, pArg);
 #else
 		int iRet = vsprintf(pMsg, pszFmt, pArg);
@@ -120,7 +120,7 @@ std::string	getTimeNowEx(int iFormat/* = 0*/,bool bUtc/* = false*/)
 {
 	char szDT[48] = {0};
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	SYSTEMTIME systm;
 	GetLocalTime(&systm);
 	sprintf_s(szDT,"%s.%03ld",getSpecialDT(time(NULL),iFormat,bUtc).c_str(),systm.wMilliseconds);
@@ -137,7 +137,7 @@ std::string	getSpecialDT(time_t time,int iFormat/* = 0*/,bool bUtc/* = false*/)
 {
 	tm objtm;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	gmtime_s(&objtm,&time);
 	else		localtime_s(&objtm,&time);
 #else
@@ -176,7 +176,7 @@ time_t		getTimeTBySpecialDT(int iYear,int iMon,int iDay,int iHour,int iMin,int i
 	objtm.tm_year 	= iYear - 1900;	objtm.tm_mon	= iMon - 1;
 	objtm.tm_mday	= iDay;			objtm.tm_hour	= iHour;
 	objtm.tm_min 	= iMin;			objtm.tm_sec	= iSec;
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	return _mkgmtime(&objtm);
 #else
 	if (bUtc)	return timegm(&objtm);
@@ -197,7 +197,7 @@ long long	getOffTM(int iYear,int iMon,int iDay,int iHour,int iMin,int iSec,
 	objtm.tm_sec	= iSec + iSecOff;
 
 	time_t ttm = 0;
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	
 		ttm = _mkgmtime(&objtm);
 #else
@@ -207,7 +207,7 @@ long long	getOffTM(int iYear,int iMon,int iDay,int iHour,int iMin,int iSec,
 	else
 		ttm = mktime(&objtm);
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	gmtime_s(&objtm,&ttm);
 	else		localtime_s(&objtm,&ttm);
 #else
@@ -248,7 +248,7 @@ time_t		getSpecialWeekDay(int iYear,int iMon,int iDay,int iHour,int iMin,int iSe
 	objTM.tm_sec = iSec;
 
 	time_t ttm = 0;
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	
 		ttm = _mkgmtime(&objTM);
 #else
@@ -258,7 +258,7 @@ time_t		getSpecialWeekDay(int iYear,int iMon,int iDay,int iHour,int iMin,int iSe
 	else
 		ttm = mktime(&objTM);
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	gmtime_s(&objTM,&ttm);
 	else		localtime_s(&objTM,&ttm);
 #else
@@ -269,7 +269,7 @@ time_t		getSpecialWeekDay(int iYear,int iMon,int iDay,int iHour,int iMin,int iSe
 	objTM.tm_mday -= objTM.tm_wday - iWeekDay;
 
 	ttm = 0;
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)	
 		ttm = _mkgmtime(&objTM);
 #else
@@ -286,7 +286,7 @@ struct tm	getTMBySpecialDT(time_t time,bool bUtc/* = false*/)
 {
 	struct tm _tm;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	if (bUtc)
 		gmtime_s(&_tm,&time);
 	else localtime_s(&_tm,&time);
@@ -304,7 +304,7 @@ int			whetherWeekEnd(time_t tt,bool bUtc/* = false*/)
 {
 	tm objtm;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 	if (bUtc)	gmtime_s(&objtm,&tt);
 	else		localtime_s(&objtm,&tt);
@@ -340,7 +340,7 @@ int			getWeek(time_t tt,bool bUtc /*= false*/)
 {
 	tm objtm;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 	if (bUtc)	gmtime_s(&objtm,&tt);
 	else		localtime_s(&objtm,&tt);
@@ -377,7 +377,7 @@ std::string	getFFLInfo(const char *pFile ,const char * pFunc,int ilen)
 }
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 char* 		MapMemFile (const char* szFileName, unsigned int length,HANDLE &handleFile,HANDLE &handleMap)
 {
 	if (_access(szFileName,0))
@@ -508,7 +508,7 @@ bool 		createDirectory(const char *szDirectoryPath, int iDirPermission/* = 0744*
 		{
 			refChar = '\0';
 			int iStatus = 0;
-#ifdef _MSC_VER
+#if defined _MSC_VER || defined __MINGW32__ || defined __MINGW64__
 			iStatus = _access(szPathBuffer, 0 );
 #else
 			iStatus = access(szPathBuffer,0);
@@ -518,7 +518,7 @@ bool 		createDirectory(const char *szDirectoryPath, int iDirPermission/* = 0744*
 			{
 				if ((ENOTDIR == errno) || (ENOENT == errno))
 				{
-#ifdef _MSC_VER
+#if defined _MSC_VER || defined __MINGW32__ || defined __MINGW64__
 					iStatus = _mkdir(szPathBuffer);
 #else
 					iStatus = mkdir(szPathBuffer,S_IRUSR|S_IWUSR|S_IXUSR);
@@ -535,7 +535,7 @@ bool 		createDirectory(const char *szDirectoryPath, int iDirPermission/* = 0744*
 				}
 			}
 
-#ifdef _MSC_VER
+#if defined _MSC_VER || defined __MINGW32__ || defined __MINGW64__
 			refChar = '\\';
 #else
 			refChar = '/';
@@ -582,10 +582,8 @@ std::string	getExeDir()
 
 	char szPath[MAX_PATH] = {0};
 
-#ifdef _MSC_VER
-
+#ifdef _WIN32
 	GetModuleFileName(NULL,szPath,MAX_PATH);
-
 #else
 
 	//获取当前程序绝对路径    
@@ -594,7 +592,7 @@ std::string	getExeDir()
 	{
 		throw(strerror(errno));
 	}
-
+	
 #endif
 	
 	std::string strDir = szPath;
@@ -613,7 +611,7 @@ static	unsigned int	sDwGlobalSeq = 0;
 /// 获取全局SEQ
 unsigned int getGlobalSEQ()
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
 	return InterlockedIncrement(&sDwGlobalSeq);
 #else
 	return __sync_add_and_fetch(&sDwGlobalSeq,1);

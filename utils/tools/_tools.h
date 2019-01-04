@@ -8,12 +8,12 @@
 #ifndef TOOLS_H_
 #define TOOLS_H_
 
-#ifndef _MSC_VER
+#ifdef _WIN32
+#include <Windows.h>
+#else
 #include <unistd.h>
 #include <fcntl.h>
-#else
-#include <Windows.h>
-#endif 
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -90,7 +90,7 @@ std::string	getFFLInfo(const char *pFile ,const char * pFunc,int ilen);
 #define		__TIMENOW_EX_(i,j)		getTimeNowEx(i,j).c_str()
 #define 	__FFL_INFO__			getFFLInfo(__FILE__,__FUNCTION__,__LINE__).c_str()
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 char* 		MapMemFile (const char* szFileName, unsigned int length,HANDLE &handleFile,HANDLE &handleMap);
 void		unMapMemFile(char *pBuf,unsigned int lenght,HANDLE &handleFile,HANDLE &handleMap);
 #else
